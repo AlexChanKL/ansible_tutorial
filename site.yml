@@ -25,7 +25,16 @@
     tags: always
     authorized_key:
       user: simone
-      key: ""
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAgXpbBiUaodozCD3kYBhUAKmnnCmpbA+8LE/AhDuJkZ ansible"
+      
+  - name: add sudoers for simone
+    tags: always
+    copy:
+      src: sudoer_simone
+      dest: /etc/sudoers.d/simone
+      owner: root
+      group: root
+      mode: 0440
 
 - hosts: workstation
   become: true
