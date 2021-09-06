@@ -9,7 +9,7 @@
     apt:
       update_cache: yes
       changed_when:false
-      when: ansible_distribution == "Ubuntu"
+    when: ansible_distribution == "Ubuntu"
 
 - hosts: all
   become: true
