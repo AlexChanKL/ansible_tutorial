@@ -7,4 +7,3 @@
   - name: update apache2 (CentOS)
     apt:
       name: apache2
-    when: ansible_distribution == "CentOS"
