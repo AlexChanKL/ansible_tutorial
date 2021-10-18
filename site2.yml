@@ -2,11 +2,9 @@
  
 - hosts: alex@13.70.42.254  
   become: true
-  pre_tasks:
+  tasks:
   
-  - name: update repository index (CentOS)
-    tags: always
+  - name: update apache2 (CentOS)
     apt:
-      update_cache: yes
-    changed_when: false
+      name: apache2
     when: ansible_distribution == "CentOS"
