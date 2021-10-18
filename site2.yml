@@ -1,7 +1,6 @@
 ---
  
-- hosts: 
-  13.70.42.254
+- hosts: 13.70.42.254
   - vars:
     ansible_connection: ssh
     ansible_user: alex
