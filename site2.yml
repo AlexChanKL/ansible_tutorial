@@ -8,9 +8,9 @@ all:
         ansible_user: alex
         ansible_ssh_pass: TDcs@0921TDcs
   
-  - name: update repository index (CentOS)
-    tags: always
-    dnf:
-      update_cache: yes
-    changed_when: false
-    when: ansible_distribution == "CentOS"
+- name: update repository index (CentOS)
+  tags: always
+  dnf:
+    update_cache: yes
+  changed_when: false
+  when: ansible_distribution == "CentOS"
