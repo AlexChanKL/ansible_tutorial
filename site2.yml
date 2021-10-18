@@ -1,7 +1,7 @@
 ---
  
 - hosts: 13.70.42.254
-  - vars:
+  vars:
     ansible_connection: ssh
     ansible_user: alex
     ansible_ssh_pass: TDcs@0921TDcs
