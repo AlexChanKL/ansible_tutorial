@@ -4,6 +4,6 @@
   become: true
   tasks:
   
-  - name: update apache2 (CentOS)
+  - name: update dnf (CentOS)
     apt:
-      name: apache2
+      name: dnf
