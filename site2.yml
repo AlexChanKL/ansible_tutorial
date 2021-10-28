@@ -6,10 +6,7 @@
   
     - name: Install system updates for centos systems
       dnf:
-        name: '*'
-        state: latest
-        update_cache: yes
-       #cache_valid_time: 3600
+        update_cache=yes force_apt_get=yes cache_valid_time=3600
       when:
         - ansible_os_family == "RedHat"
         - ansible_distribution == "CentOS"
