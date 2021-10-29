@@ -1,0 +1,9 @@
+---
+ 
+- hosts: alex@13.70.42.254  
+  become: true
+  tasks:
+  
+    - name: Install Microsoft SQL Server
+      dnf:
+        name: 
