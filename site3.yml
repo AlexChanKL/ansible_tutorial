@@ -6,4 +6,4 @@
   
     - name: Install Microsoft SQL Server
       dnf:
-        name: 
+        name: microsoft.sql
