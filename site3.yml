@@ -4,7 +4,7 @@
  # failed_when: (end_user_license_aggreement_consent_server != "Y" )or (end_user_license_aggreement_consent_cli != "YES")
 
 - name: Install the EPEL repo rpm
-  Install:
+  dnf:
     name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     state: present
 
