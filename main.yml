@@ -1,84 +1,36 @@
 ---
-- debug:
-    msg: "Check to see if EULA variables are accepted"
-  failed_when: (end_user_license_aggreement_consent_server != "Y" )or (end_user_license_aggreement_consent_cli != "YES")
-
-- name: Install the EPEL repo rpm
-  dnf:
-    name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    state: present
-
-- name: Import the MSFT gpg key
-  rpm_key:
-    state: present
-    key: https://packages.microsoft.com/keys/microsoft.asc
-
-- name: Add the MsSQL server repo
-  yum_repository:
-    name: mssql
-    description: Microsoft SQL repo
-    file: /etc/yum.repos.d/msprod
-    baseurl: https://packages.microsoft.com/rhel/7/mssql-server/
-    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
-    gpgcheck: yes
-
-- name: Add MsSQL command line tools repo
-  yum_repository:
-    name: mssql-cli-tools
-    description: MsSQL ommand line prod tools repo
-    file: /etc/yum.repos.d/msprod
-    baseurl: https://packages.microsoft.com/rhel/7/prod/
-    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
-    gpgcheck: yes
-
-- name: Remove older unixODBC files if performing upgrade
-  yum:
-    name: "{{ item }}"
-    state: absent
-  with_items: "{{unixODBC_packages}}"
-
-- name: Update all packages
-  yum:
-    name: '*'
-    state: latest
-
-- name: Install mssql-server packages
-  yum:
-    name: "{{item}}"
-    state: present
-  with_items: "{{mssql_packages}}"
-
-- name: Install pymssql for future playbooks against DB server
-  pip:
-    name: pymssql
-    state: present
-
-- name: Install mssql-cli-tool via command with args
-  shell: ACCEPT_EULA=Y yum install mssql-tools -y
-  when: install_cli
-
-- name: Add mssql tools to .bashrc
-  lineinfile:
-    dest: "{{ ansible_user_dir}}/.bashrc"
-    state: present
-    line: 'export PATH="$PATH:/opt/mssql-tools/bin"'
-  when: install_cli
-
-- name: Add firewalld settings
-  firewalld:
-    zone: public
-    port: 1433/tcp
-    permanent: true
-    state: enabled
-  when: enable_iptables
-  notify: restart iptables
-
-- name: Stop any existing mssql-server
-  service:
-      name: mssql-server
-      state: stopped
-
-- name: Run mssql setup script
-  shell:  MSSQL_PID="{{edition}}" MSSQL_SA_PASSWORD="{{db_password}}" /opt/mssql/bin/mssql-conf -n setup accept-eula
-  register: setup_output
-  failed_when: "'Setup has completed successfully. SQL Server is now starting.' not in setup_output.stdout"
+- name: Install Mysql-server and zabbix-server
+  yum: name={{ item }} state=latest
+  with_items:
+             - mysql-server
+             - zabbix-server
+             - zabbix-server-mysql
+             - zabbix-web-mysql
+- name: Init Mysql
+  shell: mysql_install_db
+- name: Start mysql-server
+  service: name=mysqld state=started enabled=yes
+- name: Set mysql admin password
+  shell: /usr/bin/mysqladmin -u root password 'ansible'
+- name: Create zabbix master databases
+  shell: mysql -u root -p ansible -e 'create database zabbix_master character set utf8 collate utf8_bin;'
+- name: Set zabbix master database grant
+  shell: mysql -u root -pansible -e 'grant all privileges on zabbix_master.* to zabbix@localhost identified by "master";'
+- name: Import zabbix initial data (schema.sql)
+  shell: mysql -u zabbix -pmaster zabbix_master < schema.sql
+         chdir=/usr/share/doc/zabbix-server-mysql-2.4.6/create
+- name: Import zabbix initial data (images.sql)
+  shell: mysql -uzabbix -pmaster zabbix_master < images.sql
+         chdir=/usr/share/doc/zabbix-server-mysql-2.4.6/create
+- name: Import zabbix initial data (data.sql)
+  shell: mysql -uzabbix -pmaster zabbix_master < data.sql
+         chdir=/usr/share/doc/zabbix-server-mysql-2.4.6/create
+- name: change PHP timezone
+  shell: sed -e 's@;date.timezone = .*@date.timezone = Asia/Shanghai@g' /etc/php.ini
+- name: Copy /etc/zabbix/zabbix_server.conf files
+  template: src=zabbix_server.conf dest=/etc/zabbix/zabbix_server.conf owner=root group=root mode=644
+- name: Start zabbix-server and httpd
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+         - zabbix-server
+         - httpd
