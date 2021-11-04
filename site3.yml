@@ -3,6 +3,10 @@
   become: yes
   tasks:
   
+  - debug:
+      msg: "Check to see if EULA variables are accepted"
+    failed_when: (end_user_license_aggreement_consent_server != "Y" )or (end_user_license_aggreement_consent_cli != "YES")
+
   - name: Install the EPEL repo rpm
     dnf:
       name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -31,11 +35,11 @@
       gpgkey: https://packages.microsoft.com/keys/microsoft.asc
       gpgcheck: yes
 
-  - name: Remove older unixODBC files if performing upgrade
-    yum:
-      name: "{{ item }}"
-      state: absent
-    with_items: "{{unixODBC_packages}}"
+  #- name: Remove older unixODBC files if performing upgrade
+    #yum:
+   #   name: "{{ item }}"
+   #   state: absent
+   # with_items: "{{unixODBC_packages}}"
 
   - name: Update all packages
     yum:
