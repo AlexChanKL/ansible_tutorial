@@ -1,5 +1,5 @@
 ---
-- hosts: 13.70.42.254
+- hosts: alex@13.70.42.254
   become: yes
   tasks:
   - name: Install the EPEL repo rpm
