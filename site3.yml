@@ -49,9 +49,10 @@
 
   - name: Install mssql-server packages
     yum:
-      name: mssql-server
-      state: present
-    with_items: https://packages.microsoft.com/config/rhel/7/mssql-server-2017.repo
+      #name: mssql-server
+      name: "{{ site4 }}"
+      state: latest
+    #with_items: https://packages.microsoft.com/config/rhel/7/mssql-server-2017.repo
    
 
   - name: Install pymssql for future playbooks against DB server
