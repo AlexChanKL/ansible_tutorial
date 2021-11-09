@@ -49,7 +49,6 @@
 
   - name: Install mssql-server packages
     yum:
-      mssql_add_repositories: yes
       name: mssql-server
       state: present
     with_items: https://packages.microsoft.com/config/rhel/7/mssql-server-2017.repo
