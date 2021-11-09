@@ -1,6 +1,7 @@
 ---
 - hosts: alex@13.70.42.254
   become: yes
+  mssql_add_repositories: yes
   tasks:
   
   #- debug:
@@ -45,20 +46,6 @@
     yum:
       name: '*'
       state: latest
-
-  - name: Import the MSFT gpg key
-    rpm_key:
-      state: present
-      key: https://packages.microsoft.com/keys/microsoft.asc
-
-  - name: Add the MsSQL server repo
-    yum_repository:
-      name: mssql
-      description: Microsoft SQL repo
-      file: /etc/yum.repos.d/msprod
-      baseurl: https://packages.microsoft.com/rhel/7/mssql-server/
-      gpgkey: https://packages.microsoft.com/keys/microsoft.asc
-      gpgcheck: yes
 
   - name: Install mssql-server packages
     yum:
