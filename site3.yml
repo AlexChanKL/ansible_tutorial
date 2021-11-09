@@ -1,4 +1,6 @@
 ---
+mssql_add_repositories: yes
+
 - hosts: alex@13.70.42.254
   become: yes
   tasks:
